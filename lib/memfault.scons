@@ -1,0 +1,54 @@
+Import("env")
+
+headers = env.GlobRecursive(
+    "*.h",
+    Dir("memfault/memfault-firmware-sdk/components/include"),
+    exclude=[
+        "compiler_ti_arm.h",
+        "compiler_gcc.h",
+        "compiler_armcc.h",
+        "compiler_iar.h",
+    ]
+)
+
+headers += env.GlobRecursive(
+    "*.h",
+    Dir("memfault/memfault-firmware-sdk/ports/include")
+)
+
+env.Append(
+    CPPPATH=[
+        "#/lib/memfault",
+        "#/lib/memfault/memfault-firmware-sdk/ports/include",
+        "#/lib/memfault/memfault-firmware-sdk/components/include",
+        "#/lib/memfault/memfault-firmware-sdk/ports/freertos/include",
+    ],
+    #SDK_HEADERS=headers,
+)
+
+libenv = env.Clone(FW_LIB_NAME="memfault")
+libenv.ApplyLibFlags()
+
+MEMFAULT_COMPONENTS=[
+    "core",
+    "util",
+    "panics",
+    "metrics",
+]
+
+sources = env.Glob(
+    "memfault/*.c"
+)
+sources += env.Glob(
+    "memfault/memfault-firmware-sdk/ports/freertos/src/*.c"
+)
+for component in MEMFAULT_COMPONENTS:
+    path = "memfault/memfault-firmware-sdk/components/{}/src".format(component)
+    sources += env.GlobRecursive(
+        "*.c",
+        Dir(path),
+    )
+
+lib = libenv.StaticLibrary("${FW_LIB_NAME}", sources)
+libenv.Install("${LIB_DIST_DIR}", lib)
+Return("lib")

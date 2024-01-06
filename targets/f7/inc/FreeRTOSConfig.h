@@ -1,5 +1,7 @@
 #pragma once
 
+#include "memfault/ports/freertos_trace.h"
+
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
 #include <stdint.h>
 #pragma GCC diagnostic ignored "-Wredundant-decls"
@@ -28,8 +30,16 @@
 /* Heap size determined automatically by linker */
 // #define configTOTAL_HEAP_SIZE                    ((size_t)0)
 #define configMAX_TASK_NAME_LEN (32)
-#define configGENERATE_RUN_TIME_STATS 0
+
+#define configGENERATE_RUN_TIME_STATS 1
 #define configUSE_TRACE_FACILITY 1
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS()  // unused
+#define portGET_RUN_TIME_COUNTER_VALUE() ulGetRunTimeCounterValue()
+#define configUSE_STATS_FORMATTING_FUNCTIONS 1
+
+unsigned long ulGetRunTimeCounterValue(
+  void); /* Prototype of function that returns run time counter. */
+
 #define configUSE_16_BIT_TICKS 0
 #define configUSE_MUTEXES 1
 #define configQUEUE_REGISTRY_SIZE 0

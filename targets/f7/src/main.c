@@ -4,7 +4,19 @@
 #include <alt_boot.h>
 #include <update_util/update_operation.h>
 
+#include <sys/times.h>
+
+#include "memfault/components.h"
+#include "memfault/ports/freertos.h"
+
 #define TAG "Main"
+
+unsigned long ulGetRunTimeCounterValue(void) {
+  struct tms xTimes;
+  times(&xTimes);
+
+  return (unsigned long)xTimes.tms_utime;
+}
 
 int32_t init_task(void* context) {
     UNUSED(context);
@@ -19,6 +31,9 @@ int32_t init_task(void* context) {
 }
 
 int main() {
+    memfault_freertos_port_boot();
+    memfault_platform_boot();
+
     // Initialize FURI layer
     furi_init();
 

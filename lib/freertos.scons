@@ -6,6 +6,9 @@ env.Append(
         "#/lib/FreeRTOS-Kernel/include",
         "#/lib/FreeRTOS-Kernel/portable/GCC/ARM_CM4F",
         "#/lib/FreeRTOS-glue",
+        "#/lib/memfault/memfault-firmware-sdk/ports/include",
+        "#/lib/memfault/memfault-firmware-sdk/components/include",
+        "#/lib/memfault",
     ],
 )
 
@@ -18,6 +21,9 @@ sources = libenv.Glob("FreeRTOS-Kernel/*.c", source=True)
 sources += [
     "FreeRTOS-Kernel/portable/GCC/ARM_CM4F/port.c",
 ]
+sources += env.Glob(
+    "memfault/memfault-firmware-sdk/ports/freertos/src/*.c"
+)
 
 lib = libenv.StaticLibrary("${FW_LIB_NAME}", sources)
 libenv.Install("${LIB_DIST_DIR}", lib)
